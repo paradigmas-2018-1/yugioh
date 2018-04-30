@@ -15,6 +15,8 @@
 	card(14, 'O Pescador Lendario', 2500, 2100).
 	card(15, 'Cyber-Stein', 700, 500).
 
+deck(L) :- findall(card(Id, Nome, Atk, Def), card(Id, Nome, Atk, Def), L).
+
 
 
     
