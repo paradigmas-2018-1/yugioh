@@ -17,16 +17,30 @@
 	card(14, 'O Pescador Lendario', 2500, 2100).
 	card(15, 'Cyber-Stein', 700, 500).
 
+startGame(PlayerOne, PlayerTwo) :-
+    createDeck(PlayerOne),
+    createDeck(PlayerTwo),
+    createHand(PlayerOne),
+    createHand(PlayerTwo).
+    
+
 createDeck(Player) :- 
     findall(card(Id, Nome, Atk, Def), card(Id, Nome, Atk, Def), B),
     random_permutation(B, C),
     assert(deck(Player, C)).
 
+createHand(Player) :-
+    assert(hand(Player, [])).
+
 pop([X|List],X,List).
 
-draw(Player) :- deck(Player, Deck), pop(Deck, Card, Rest), updateDeck(Player, Rest), assert(hand(Player, Card)).
+push(X, List, [X | List]).
 
-updateDeck(Player, [X | XS]) :- erase(deck(Player, _)), assert(deck(Player, [X | XS])).
+updateHand(Player, Card) :- hand(Player, Hand), erase(hand(Player, _)), push(Card, Hand, NewHand), assert(hand(Player, NewHand)).
+
+draw(Player) :- deck(Player, Deck), pop(Deck, Card, Rest), updateDeck(Player, Rest), updateHand(Player, Card).
+
+updateDeck(Player, X) :- erase(deck(Player, _)), assert(deck(Player, X)).
 
 erase(X) :- erase1(X), fail.
 erase(X).
