@@ -1,5 +1,11 @@
 :- use_module(library(random)).
 
+:- dynamic game_state/1, hand/2, deck/2.
+
+% player(Id, Name, Life)
+player(1, "Player 1", 4000).
+player(2, "Player 2", 4000).
+
 % card(Id, Nome, Atk, Def)
 	card(1, 'Mago Negro', 2500, 2100).
 	card(2, 'Dragao Branco de Olhos Azuis', 3000, 2500).
@@ -22,9 +28,9 @@ startGame(PlayerOne, PlayerTwo) :-
     createDeck(PlayerTwo),
     createHand(PlayerOne),
     createHand(PlayerTwo).
-    
 
-createDeck(Player) :- 
+
+createDeck(Player) :-
     findall(card(Id, Nome, Atk, Def), card(Id, Nome, Atk, Def), B),
     random_permutation(B, C),
     assert(deck(Player, C)).
@@ -43,9 +49,12 @@ draw(Player) :- deck(Player, Deck), pop(Deck, Card, Rest), updateDeck(Player, Re
 updateDeck(Player, X) :- erase(deck(Player, _)), assert(deck(Player, X)).
 
 erase(X) :- erase1(X), fail.
-erase(X).
+% erase(X).
 
 erase1(X) :- retract(X).
-erase1(X).
+% erase1(X).
 
-    
+initialize:-
+	write("Yugioh Game"), nl.
+
+:- retractall(game_state(_)), initialize.
