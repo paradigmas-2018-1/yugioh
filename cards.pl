@@ -22,7 +22,16 @@ createDeck(Player) :-
     random_permutation(B, C),
     assert(deck(Player, C)).
 
-deck(Player) :- listing(deck(Player, _)).
+pop([X|List],X,List).
 
+draw(Player) :- deck(Player, Deck), pop(Deck, Card, Rest), updateDeck(Player, Rest), assert(hand(Player, Card)).
+
+updateDeck(Player, [X | XS]) :- erase(deck(Player, _)), assert(deck(Player, [X | XS])).
+
+erase(X) :- erase1(X), fail.
+erase(X).
+
+erase1(X) :- retract(X).
+erase1(X).
 
     
