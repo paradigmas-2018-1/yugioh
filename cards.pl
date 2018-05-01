@@ -17,19 +17,21 @@
 	card(14, 'O Pescador Lendario', 2500, 2100).
 	card(15, 'Cyber-Stein', 700, 500).
 
-player(_, _).
-deck(_, _).
-hand(_, _).
-
 startGame(PlayerOne, PlayerTwo) :-
     createPlayer(PlayerOne),
     createPlayer(PlayerTwo),
+    createBoard(PlayerOne),
+    createBoard(PlayerTwo),
     createDeck(PlayerOne),
     createDeck(PlayerTwo),
     createHand(PlayerOne),
     createHand(PlayerTwo).
+
+createBoard(Player) :- assert(board(Player, [0,0,0])).
     
 createPlayer(Name) :- assert(player(Name, 4000)).
+
+summon(Player, Card) :- board(Player, [X, Y, Z]), erase(board(Player, _)), assert(board(Player, [Card, 0, 0])).
 
 deduceLifePoints(Player, Amount) :- player(Player, LifePoints), erase(player(Player, _)), assert(player(Player, LifePoints - Amount)).
 
