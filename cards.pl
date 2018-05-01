@@ -1,3 +1,5 @@
+:- use_module(library(random)).
+
 % card(Id, Nome, Atk, Def)
 	card(1, 'Mago Negro', 2500, 2100).
 	card(2, 'Dragao Branco de Olhos Azuis', 3000, 2500).
@@ -15,8 +17,12 @@
 	card(14, 'O Pescador Lendario', 2500, 2100).
 	card(15, 'Cyber-Stein', 700, 500).
 
-deck(L) :- findall(card(Id, Nome, Atk, Def), card(Id, Nome, Atk, Def), L).
+createDeck(Player) :- 
+    findall(card(Id, Nome, Atk, Def), card(Id, Nome, Atk, Def), B),
+    random_permutation(B, C),
+    assert(deck(Player, C)).
 
+deck(Player) :- listing(deck(Player, _)).
 
 
     
