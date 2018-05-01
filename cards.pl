@@ -2,71 +2,87 @@
 
 :- dynamic game_state/1, hand/2, deck/2, player/2, board/2.
 
-% player(Id, Name, Life)
-player(1, "Player 1", 4000).
-player(2, "Player 2", 4000).
+% player(Id, Life)
 
 % card(Id, Nome, Atk, Def)
-	card(1, 'Mago Negro', 2500, 2100).
-	card(2, 'Dragao Branco de Olhos Azuis', 3000, 2500).
-	card(3, 'Rainha dos Insetos', 2200, 2400).
-	card(4, 'O criador', 2300, 3000).
-	card(5, 'Cyber Anja Dakini', 2700, 2400).
-	card(6, 'Mago do Tempo', 500, 400).
-	card(7, 'Boxeador', 1800, 1000).
-	card(8, 'Kuriboh', 300, 200).
-	card(9, 'Saffira Rainha dos Dragoes', 2500, 2400).
-	card(10, 'Levia-Dragon Daedalus', 2600, 1500).
-	card(11, 'Oraculo do Coveiro', 2000, 1500).
-	card(12, 'Jinzo', 2400, 1500).
-	card(13, 'Caveira Negra', 3200, 2500).
-	card(14, 'O Pescador Lendario', 2500, 2100).
-	card(15, 'Cyber-Stein', 700, 500).
+card(1, 'Mago Negro', 2500, 2100).
+card(2, 'Dragao Branco de Olhos Azuis', 3000, 2500).
+card(3, 'Rainha dos Insetos', 2200, 2400).
+card(4, 'O criador', 2300, 3000).
+card(5, 'Cyber Anja Dakini', 2700, 2400).
+card(6, 'Mago do Tempo', 500, 400).
+card(7, 'Boxeador', 1800, 1000).
+card(8, 'Kuriboh', 300, 200).
+card(9, 'Saffira Rainha dos Dragoes', 2500, 2400).
+card(10, 'Levia-Dragon Daedalus', 2600, 1500).
+card(11, 'Oraculo do Coveiro', 2000, 1500).
+card(12, 'Jinzo', 2400, 1500).
+card(13, 'Caveira Negra', 3200, 2500).
+card(14, 'O Pescador Lendario', 2500, 2100).
+card(15, 'Cyber-Stein', 700, 500).
 
-startGame(PlayerOne, PlayerTwo) :-
-    createPlayer(PlayerOne),
-    createPlayer(PlayerTwo),
-    createBoard(PlayerOne),
-    createBoard(PlayerTwo),
-    createDeck(PlayerOne),
-    createDeck(PlayerTwo),
-    createHand(PlayerOne),
-    createHand(PlayerTwo).
+startPlayer(PlayerId) :-
+    createPlayer(PlayerId),
+    createPlayerBoard(PlayerId),
+    createPlayerDeck(PlayerId),
+    createPlayerHand(PlayerId).
 
-createBoard(Player) :- assert(board(Player, [0,0,0])).
-    
-createPlayer(Name) :- assert(player(Name, 4000)).
+createPlayerBoard(PlayerId) :-
+		assert(board(PlayerId, [0,0,0])).
 
-summon(Player, Card) :- board(Player, [_, Y, Z]), erase(board(Player, _)), assert(board(Player, [Card, Y, Z])).
+createPlayer(Id) :-
+		assert(player(Id, 4000)).
 
-deduceLifePoints(Player, Amount) :- player(Player, LifePoints), erase(player(Player, _)), assert(player(Player, LifePoints - Amount)).
+summon(Player, Card) :-
+		board(Player, [_, Y, Z]),
+		erase(board(Player, _)),
+		assert(board(Player, [Card, Y, Z])).
+
+deduceLifePoints(Player, Amount) :-
+		player(Player, LifePoints),
+		erase(player(Player, _)),
+		assert(player(Player, LifePoints - Amount)).
 
 
-createDeck(Player) :-
+createPlayerDeck(Player) :-
     findall(card(Id, Nome, Atk, Def), card(Id, Nome, Atk, Def), B),
     random_permutation(B, C),
     assert(deck(Player, C)).
 
-createHand(Player) :-
-    assert(hand(Player, [])).
+createPlayerHand(PlayerId) :-
+    assert(hand(PlayerId, [])).
 
 pop([X|List],X,List).
 
 push(X, List, [X | List]).
 
-updateHand(Player, Card) :- hand(Player, Hand), erase(hand(Player, _)), push(Card, Hand, NewHand), assert(hand(Player, NewHand)).
+updateHand(Player, Card) :-
+		hand(Player, Hand), erase(hand(Player, _)),
+		push(Card, Hand, NewHand),
+		assert(hand(Player, NewHand)).
 
-draw(Player) :- deck(Player, Deck), pop(Deck, Card, Rest), updateDeck(Player, Rest), updateHand(Player, Card).
+draw(Player) :-
+		deck(Player, Deck),
+		pop(Deck, Card, Rest),
+		updateDeck(Player, Rest),
+		updateHand(Player, Card).
 
-updateDeck(Player, X) :- erase(deck(Player, _)), assert(deck(Player, X)).
+updateDeck(Player, X) :-
+		erase(deck(Player, _)),
+		assert(deck(Player, X)).
 
-erase(X) :- erase1(X), fail.
+erase(X) :-
+		erase1(X),
+		fail.
 erase(X).
 
-erase1(X) :- retract(X).
+erase1(X) :-
+		retract(X).
 erase1(X).
 
 initialize:-
-	write("Yugioh Game"), nl.
+		write("Yugioh Game"), nl,
+		startPlayer(1),
+		startPlayer(2).
 
 :- retractall(game_state(_)), initialize.
