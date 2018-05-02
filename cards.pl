@@ -38,6 +38,11 @@ summon(Player, Card) :-
 		erase(board(Player, _)),
 		assert(board(Player, [Card, Y, Z])).
 
+/* Used to make the monster leave the field */
+destroyMonster(Player, Card) :-
+    erase(board(Player, [Card, Y, Z])),
+    assert(board(Player, [_, Y, Z])).
+
 deduceLifePoints(Player, Amount) :-
 		player(Player, LifePoints),
 		erase(player(Player, _)),
@@ -67,11 +72,15 @@ draw(Player) :-
 		updateDeck(Player, Rest),
 		updateHand(Player, Card).
 
+/* Used to draw player's initial hand */
 drawInitialHand(Player, Number) :-
     Number > 0,
     draw(Player),
     UpdatedNumber is Number - 1,
     drawInitialHand(Player, UpdatedNumber).
+
+battleInAttackPosition(YourMonster, OpponentMonster) :-
+
 
 updateDeck(Player, X) :-
 		erase(deck(Player, _)),
