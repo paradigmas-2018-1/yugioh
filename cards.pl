@@ -43,6 +43,14 @@ destroyMonster(Player, Card) :-
     erase(board(Player, [Card, Y, Z])),
     assert(board(Player, [_, Y, Z])).
 
+/* Used to resolve battle between monsters in attack position */
+battleInAttackPosition(AttackingPlayer, AttackingMonster, Opponent, OpponentMonster) :-
+    /* findall(card(_,AttackingMonster,Atk,_), atk(card(_,_,Atk,_)), AttackingMonsterAtk),
+    findall(card(_,OpponentMonster,Atk,_), atk(card(_,_,Atk,_)), OpponentMonsterAtk), */
+    AttackingMonsterAtk > OpponentMonsterAtk,
+    deduceLifePoints(Opponent, AttackingMonsterAtk - OpponentMonsterAtk),
+    destroyMonster(Opponent, OpponentMonster).
+
 deduceLifePoints(Player, Amount) :-
 		player(Player, LifePoints),
 		erase(player(Player, _)),
@@ -73,13 +81,12 @@ draw(Player) :-
 		updateHand(Player, Card).
 
 /* Used to draw player's initial hand */
+drawInitialHand(Player, 0).
 drawInitialHand(Player, Number) :-
     Number > 0,
     draw(Player),
     UpdatedNumber is Number - 1,
     drawInitialHand(Player, UpdatedNumber).
-
-battleInAttackPosition(YourMonster, OpponentMonster) :-
 
 
 updateDeck(Player, X) :-
