@@ -67,6 +67,12 @@ draw(Player) :-
 		updateDeck(Player, Rest),
 		updateHand(Player, Card).
 
+drawInitialHand(Player, Number) :-
+    Number > 0,
+    draw(Player),
+    UpdatedNumber is Number - 1,
+    drawInitialHand(Player, UpdatedNumber).
+
 updateDeck(Player, X) :-
 		erase(deck(Player, _)),
 		assert(deck(Player, X)).
