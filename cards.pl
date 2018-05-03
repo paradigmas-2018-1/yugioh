@@ -1,4 +1,5 @@
 :- use_module(library(random)).
+:- use_module(library(lists)).
 
 :- dynamic game_state/1, hand/2, deck/2, player/2, board/2.
 
@@ -25,7 +26,8 @@ startPlayer(PlayerId) :-
     createPlayer(PlayerId),
     createPlayerBoard(PlayerId),
     createPlayerDeck(PlayerId),
-    createPlayerHand(PlayerId).
+    createPlayerHand(PlayerId),
+    drawInitialHand(PlayerId, 5).
 
 createPlayerBoard(PlayerId) :-
 		assert(board(PlayerId, [0,0,0])).
@@ -40,11 +42,22 @@ summon(Player, Card) :-
 
 /* Used to make the monster leave the field */
 destroyMonster(Player, Card) :-
+    board(Player, [_, Y, Z]),
     erase(board(Player, [Card, Y, Z])),
-    assert(board(Player, [_, Y, Z])).
+    assert(board(Player, [0, Y, Z])).
+
+isOnBoard(Player, Card) :-
+    board(Player, List),
+    memberCheck(Card, List).
+
+memberCheck(Elem, List) :-
+    member(Elem, List), 
+    !.
 
 /* Used to resolve battle between monsters in attack position */
 battleInAttackPosition(AttackingPlayer, AttackingMonster, Opponent, OpponentMonster) :-
+    isOnBoard(AttackingPlayer, AttackingMonster),
+    isOnBoard(Opponent, OpponentMonster),
     card(_,AttackingMonster,AttackingMonsterAtk,_),
     card(_,OpponentMonster, OpponentMonsterAtk,_),
     AttackingMonsterAtk > OpponentMonsterAtk,
@@ -81,7 +94,7 @@ draw(Player) :-
 		updateHand(Player, Card).
 
 /* Used to draw player's initial hand */
-drawInitialHand(Player, 0).
+drawInitialHand(_, 0).
 drawInitialHand(Player, Number) :-
     Number > 0,
     draw(Player),
