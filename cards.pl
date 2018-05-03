@@ -36,10 +36,17 @@ createPlayer(Id) :-
 		assert(player(Id, 4000)).
 
 summon(Player, Card) :-
-        isInHand(Player, Card),
-		board(Player, [_, Y, Z]),
-		erase(board(Player, _)),
-		assert(board(Player, [Card, Y, Z])).
+        boardIsFull(Player) -> false ;
+            isInHand(Player, Card),
+            board(Player, [X, Y, Z]),
+            erase(board(Player, _)),
+            assert(board(Player, [Card, Y, Z])).
+
+boardIsFull(Player) :-
+    board(Player, [X, Y, Z]),
+    X \= 0,
+    Y \= 0,
+    Z \= 0.
 
 /* Used to make the monster leave the field */
 destroyMonster(Player, Card) :-
