@@ -36,11 +36,13 @@ createPlayer(Id) :-
 		assert(player(Id, 4000)).
 
 summon(Player, Card) :-
-        boardIsFull(Player) -> false ;
+        \+ boardIsFull(Player) -> (
             isInHand(Player, Card),
             board(Player, [X, Y, Z]),
             erase(board(Player, _)),
-            assert(board(Player, [Card, Y, Z])).
+            assert(board(Player, [Card, Y, Z]))
+        ) ; false.
+            
 
 boardIsFull(Player) :-
     board(Player, [X, Y, Z]),
