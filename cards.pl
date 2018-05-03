@@ -45,8 +45,8 @@ destroyMonster(Player, Card) :-
 
 /* Used to resolve battle between monsters in attack position */
 battleInAttackPosition(AttackingPlayer, AttackingMonster, Opponent, OpponentMonster) :-
-    /* findall(card(_,AttackingMonster,Atk,_), atk(card(_,_,Atk,_)), AttackingMonsterAtk),
-    findall(card(_,OpponentMonster,Atk,_), atk(card(_,_,Atk,_)), OpponentMonsterAtk), */
+    card(_,AttackingMonster,AttackingMonsterAtk,_),
+    card(_,OpponentMonster, OpponentMonsterAtk,_),
     AttackingMonsterAtk > OpponentMonsterAtk,
     deduceLifePoints(Opponent, AttackingMonsterAtk - OpponentMonsterAtk),
     destroyMonster(Opponent, OpponentMonster).
@@ -96,11 +96,11 @@ updateDeck(Player, X) :-
 erase(X) :-
 		erase1(X),
 		fail.
-erase(X).
+erase(_).
 
 erase1(X) :-
 		retract(X).
-erase1(X).
+erase1(_).
 
 initialize:-
 		write("Yugioh Game"), nl,
