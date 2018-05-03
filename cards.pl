@@ -36,6 +36,7 @@ createPlayer(Id) :-
 		assert(player(Id, 4000)).
 
 summon(Player, Card) :-
+        isInHand(Player, Card),
 		board(Player, [_, Y, Z]),
 		erase(board(Player, _)),
 		assert(board(Player, [Card, Y, Z])).
@@ -48,6 +49,10 @@ destroyMonster(Player, Card) :-
 
 isOnBoard(Player, Card) :-
     board(Player, List),
+    memberCheck(Card, List).
+
+isInHand(Player, Card) :-
+    hand(Player, List),
     memberCheck(Card, List).
 
 memberCheck(Elem, List) :-
@@ -71,7 +76,7 @@ deduceLifePoints(Player, Amount) :-
 
 
 createPlayerDeck(Player) :-
-    findall(card(Id, Nome, Atk, Def), card(Id, Nome, Atk, Def), B),
+    findall(Nome, card(_, Nome, _, _), B),
     random_permutation(B, C),
     assert(deck(Player, C)).
 
