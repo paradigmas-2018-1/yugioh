@@ -40,9 +40,11 @@ changeTurn() :-
     X == 1 -> erase(turn(_)), assert(turn(2)) ; erase(turn(_)), assert(turn(1)).
 
 nextPlayer(CurrentPlayer, NextPlayer) :-
-    CurrentPlayer == 1 -> NextPlayer = 2 ;
-    CurrentPlayer == 2 -> NextPlayer = 1 ;
-    false.
+    (
+        CurrentPlayer == 1 -> NextPlayer = 2 
+    ;   CurrentPlayer == 2 -> NextPlayer = 1 
+    ; false
+    ).
 
 createPlayer(Id) :-
 		assert(player(Id, 4000)).
@@ -50,7 +52,7 @@ createPlayer(Id) :-
 summon(Card) :-
     turn(Player),
     isInHand(Player, Card),
-    \+ boardIsFull(Player),
+    \+boardIsFull(Player),
     board(Player, [X, Y, Z]),
     (
         X == 0 -> erase(board(Player, _)), assert(board(Player, [Card, Y, Z]))
@@ -60,7 +62,9 @@ summon(Card) :-
     ), 
     removeFromHand(Card),
     firstTurn(FirstTurn),
-    FirstTurn -> erase(firstTurn(_)), assert(firstTurn(false)), changeTurn() ; true.
+    (
+        FirstTurn -> erase(firstTurn(_)), assert(firstTurn(false)), changeTurn() ; true
+    ).
 
 removeFromHand(Card) :-
     turn(Player),
