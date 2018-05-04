@@ -114,9 +114,12 @@ battleInAttackPosition(AttackingMonster, OpponentMonster) :-
     ), changeTurn().
 
 deduceLifePoints(Player, Amount) :-
-		player(Player, LifePoints),
+        player(Player, LifePoints),
+        A is LifePoints,
+        B is Amount,
+        Result is A - B,
 		erase(player(Player, _)),
-		assert(player(Player, LifePoints - Amount)).
+		assert(player(Player, Result)).
 
 
 createPlayerDeck(Player) :-
