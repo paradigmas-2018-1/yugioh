@@ -1,7 +1,7 @@
 :- use_module(library(random)).
 :- use_module(library(lists)).
 
-:- dynamic game_state/1, hand/2, deck/2, player/2, board/2, turn/1.
+:- dynamic game_state/1, hand/2, deck/2, player/2, board/2, turn/1, firstTurn/1.
 
 % player(Id, Life)
 
@@ -57,7 +57,10 @@ summon(Card) :-
     ;   Y == 0 -> erase(board(Player, _)), assert(board(Player, [X, Card, Z]))
     ;   Z == 0 -> erase(board(Player, _)), assert(board(Player, [X, Y, Card]))
     ;   false
-    ).    
+    ), 
+    firstTurn(FirstTurn),
+    FirstTurn -> erase(firstTurn(_)), assert(firstTurn(false)), changeTurn() ; true.
+
 
 boardIsFull(Player) :-
     board(Player, [X, Y, Z]),
@@ -153,6 +156,7 @@ initialize:-
 		write("Yugioh Game"), nl,
 		startPlayer(1),
         startPlayer(2),
-        createTurn().
+        createTurn(),
+        assert(firstTurn(true)).
 
 :- retractall(game_state(_)), initialize.
