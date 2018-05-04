@@ -58,9 +58,17 @@ summon(Card) :-
     ;   Z == 0 -> erase(board(Player, _)), assert(board(Player, [X, Y, Card]))
     ;   false
     ), 
+    removeFromHand(Card),
     firstTurn(FirstTurn),
     FirstTurn -> erase(firstTurn(_)), assert(firstTurn(false)), changeTurn() ; true.
 
+removeFromHand(Card) :-
+    turn(Player),
+    isInHand(Player, Card),
+    hand(Player, Hand),
+    delete(Hand, Card, NewHand),
+    erase(hand(Player, _)),
+    assert(hand(Player, NewHand)).
 
 boardIsFull(Player) :-
     board(Player, [X, Y, Z]),
@@ -123,6 +131,10 @@ updateHand(Player, Card) :-
 		hand(Player, Hand), erase(hand(Player, _)),
 		push(Card, Hand, NewHand),
 		assert(hand(Player, NewHand)).
+
+draw() :-
+    turn(Player),
+    draw(Player).
 
 draw(Player) :-
 		deck(Player, Deck),
