@@ -98,6 +98,16 @@ memberCheck(Elem, List) :-
     member(Elem, List), 
     !.
 
+checkWinOrLose() :-
+    player(1, X),
+    (
+        X =< 0 -> print('Jogador 1 Perdeu!') ;
+        player(2, Y),
+        Y =< 0 -> print('Jogador 2 Perdeu') 
+    ; true
+    ).
+    
+
 /* Used to resolve battle between monsters in attack position */
 battleInAttackPosition(AttackingMonster, OpponentMonster) :-
     turn(AttackingPlayer),
@@ -111,7 +121,7 @@ battleInAttackPosition(AttackingMonster, OpponentMonster) :-
     ;   OpponentMonsterAtk > AttackingMonsterAtk -> deduceLifePoints(AttackingPlayer, OpponentMonsterAtk - AttackingMonsterAtk), destroyMonster(AttackingPlayer, AttackingMonster)
     ;   AttackingMonsterAtk =:= OpponentMonsterAtk -> destroyMonster(Opponent, OpponentMonster), destroyMonster(AttackingPlayer, AttackingMonster)
     ; false
-    ), changeTurn().
+    ), checkWinOrLose(), changeTurn().
 
 deduceLifePoints(Player, Amount) :-
         player(Player, LifePoints),
@@ -120,6 +130,7 @@ deduceLifePoints(Player, Amount) :-
         Result is A - B,
 		erase(player(Player, _)),
 		assert(player(Player, Result)).
+
 
 
 createPlayerDeck(Player) :-
