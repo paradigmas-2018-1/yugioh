@@ -1,7 +1,7 @@
 :- use_module(library(random)).
 :- use_module(library(lists)).
 
-:- dynamic game_state/1, hand/2, deck/2, player/2, board/2.
+:- dynamic game_state/1, hand/2, deck/2, player/2, board/2, turn/1.
 
 % player(Id, Life)
 
@@ -32,17 +32,27 @@ startPlayer(PlayerId) :-
 createPlayerBoard(PlayerId) :-
 		assert(board(PlayerId, [0,0,0])).
 
+createTurn() :- 
+    assert(turn(1)).
+
+changeTurn() :-
+    turn(X),
+    X == 1 -> erase(turn(_)), assert(turn(2)) ; erase(turn(_)), assert(turn(1)).
+
 createPlayer(Id) :-
 		assert(player(Id, 4000)).
 
-summon(Player, Card) :-
-        \+ boardIsFull(Player) -> (
-            isInHand(Player, Card),
-            board(Player, [X, Y, Z]),
-            erase(board(Player, _)),
-            assert(board(Player, [Card, Y, Z]))
-        ) ; false.
-            
+summon(Card) :-
+    turn(Player),
+    isInHand(Player, Card),
+    \+ boardIsFull(Player),
+    board(Player, [X, Y, Z]),
+    (
+        X == 0 -> erase(board(Player, _)), assert(board(Player, [Card, Y, Z]))
+    ;   Y == 0 -> erase(board(Player, _)), assert(board(Player, [X, Card, Z]))
+    ;   Z == 0 -> erase(board(Player, _)), assert(board(Player, [X, Y, Card]))
+    ;   false
+    ).    
 
 boardIsFull(Player) :-
     board(Player, [X, Y, Z]),
@@ -132,6 +142,7 @@ erase1(_).
 initialize:-
 		write("Yugioh Game"), nl,
 		startPlayer(1),
-		startPlayer(2).
+        startPlayer(2),
+        createTurn().
 
 :- retractall(game_state(_)), initialize.
