@@ -39,6 +39,11 @@ changeTurn() :-
     turn(X),
     X == 1 -> erase(turn(_)), assert(turn(2)) ; erase(turn(_)), assert(turn(1)).
 
+nextPlayer(CurrentPlayer, NextPlayer) :-
+    CurrentPlayer == 1 -> NextPlayer = 2 ;
+    CurrentPlayer == 2 -> NextPlayer = 1 ;
+    false.
+
 createPlayer(Id) :-
 		assert(player(Id, 4000)).
 
@@ -79,14 +84,19 @@ memberCheck(Elem, List) :-
     !.
 
 /* Used to resolve battle between monsters in attack position */
-battleInAttackPosition(AttackingPlayer, AttackingMonster, Opponent, OpponentMonster) :-
+battleInAttackPosition(AttackingMonster, OpponentMonster) :-
+    turn(AttackingPlayer),
+    nextPlayer(AttackingPlayer, Opponent),
     isOnBoard(AttackingPlayer, AttackingMonster),
     isOnBoard(Opponent, OpponentMonster),
     card(_,AttackingMonster,AttackingMonsterAtk,_),
     card(_,OpponentMonster, OpponentMonsterAtk,_),
-    AttackingMonsterAtk > OpponentMonsterAtk,
-    deduceLifePoints(Opponent, AttackingMonsterAtk - OpponentMonsterAtk),
-    destroyMonster(Opponent, OpponentMonster).
+    (
+        AttackingMonsterAtk > OpponentMonsterAtk -> deduceLifePoints(Opponent, AttackingMonsterAtk - OpponentMonsterAtk), destroyMonster(Opponent, OpponentMonster)
+    ;   OpponentMonsterAtk > AttackingMonsterAtk -> deduceLifePoints(AttackingPlayer, OpponentMonsterAtk - AttackingMonsterAtk), destroyMonster(AttackingPlayer, AttackingMonster)
+    ;   AttackingMonsterAtk =:= OpponentMonsterAtk -> destroyMonster(Opponent, OpponentMonster), destroyMonster(AttackingPlayer, AttackingMonster)
+    ; false
+    ), changeTurn().
 
 deduceLifePoints(Player, Amount) :-
 		player(Player, LifePoints),
